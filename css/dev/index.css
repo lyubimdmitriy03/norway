@@ -750,6 +750,13 @@ h3 {
     bottom: calc(50% - 0.0625rem);
     transform: rotate(45deg);
   }
+  .header.--header-scroll .icon-menu span {
+    background-color: #000;
+  }
+  .header.--header-scroll .icon-menu::before, .header.--header-scroll .icon-menu::after {
+    content: "";
+    background-color: #000;
+  }
   .header__body .menu__body {
     display: flex;
     flex-direction: column;
@@ -769,6 +776,26 @@ h3 {
   .header__authentication {
     margin: 3.125rem 0rem 0rem 0rem;
     justify-content: center;
+  }
+  [data-fls-menu-open] .--header-scroll .icon-menu span {
+    background-color: #fff;
+  }
+  [data-fls-menu-open] .--header-scroll .icon-menu::before, [data-fls-menu-open] .--header-scroll .icon-menu::after {
+    content: "";
+    background-color: #fff;
+  }
+  [data-fls-menu-open] .--header-scroll #header--logo path {
+    fill: #fff;
+  }
+  [data-fls-menu-open] .--header-scroll #header--logo path:nth-child(-n+3) {
+    fill: transparent;
+    stroke: #fff;
+  }
+  [data-fls-menu-open] .--header-scroll .menu__link {
+    color: #fff;
+  }
+  [data-fls-menu-open] .--header-scroll .button--empty {
+    color: #fff;
   }
   .footer__block {
     padding: 3rem 1rem 1.5rem 1rem;
