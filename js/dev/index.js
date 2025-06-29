@@ -828,8 +828,8 @@ function updateSlides() {
   } = swiper;
   const isVirtual = swiper.virtual && params.virtual.enabled;
   const previousSlidesLength = isVirtual ? swiper.virtual.slides.length : swiper.slides.length;
-  const slides2 = elementChildren(slidesEl, `.${swiper.params.slideClass}, swiper-slide`);
-  const slidesLength = isVirtual ? swiper.virtual.slides.length : slides2.length;
+  const slides = elementChildren(slidesEl, `.${swiper.params.slideClass}, swiper-slide`);
+  const slidesLength = isVirtual ? swiper.virtual.slides.length : slides.length;
   let snapGrid = [];
   const slidesGrid = [];
   const slidesSizesGrid = [];
@@ -856,7 +856,7 @@ function updateSlides() {
     spaceBetween = parseFloat(spaceBetween);
   }
   swiper.virtualSize = -spaceBetween;
-  slides2.forEach((slideEl) => {
+  slides.forEach((slideEl) => {
     if (rtl) {
       slideEl.style.marginLeft = "";
     } else {
@@ -871,7 +871,7 @@ function updateSlides() {
   }
   const gridEnabled = params.grid && params.grid.rows > 1 && swiper.grid;
   if (gridEnabled) {
-    swiper.grid.initSlides(slides2);
+    swiper.grid.initSlides(slides);
   } else if (swiper.grid) {
     swiper.grid.unsetSlides();
   }
@@ -882,14 +882,14 @@ function updateSlides() {
   for (let i = 0; i < slidesLength; i += 1) {
     slideSize = 0;
     let slide2;
-    if (slides2[i]) slide2 = slides2[i];
+    if (slides[i]) slide2 = slides[i];
     if (gridEnabled) {
-      swiper.grid.updateSlide(i, slide2, slides2);
+      swiper.grid.updateSlide(i, slide2, slides);
     }
-    if (slides2[i] && elementStyle(slide2, "display") === "none") continue;
+    if (slides[i] && elementStyle(slide2, "display") === "none") continue;
     if (params.slidesPerView === "auto") {
       if (shouldResetSlideSize) {
-        slides2[i].style[swiper.getDirectionLabel("width")] = ``;
+        slides[i].style[swiper.getDirectionLabel("width")] = ``;
       }
       const slideStyles = getComputedStyle(slide2);
       const currentTransform = slide2.style.transform;
@@ -929,12 +929,12 @@ function updateSlides() {
     } else {
       slideSize = (swiperSize - (params.slidesPerView - 1) * spaceBetween) / params.slidesPerView;
       if (params.roundLengths) slideSize = Math.floor(slideSize);
-      if (slides2[i]) {
-        slides2[i].style[swiper.getDirectionLabel("width")] = `${slideSize}px`;
+      if (slides[i]) {
+        slides[i].style[swiper.getDirectionLabel("width")] = `${slideSize}px`;
       }
     }
-    if (slides2[i]) {
-      slides2[i].swiperSlideSize = slideSize;
+    if (slides[i]) {
+      slides[i].swiperSlideSize = slideSize;
     }
     slidesSizesGrid.push(slideSize);
     if (params.centeredSlides) {
@@ -999,9 +999,9 @@ function updateSlides() {
   if (snapGrid.length === 0) snapGrid = [0];
   if (spaceBetween !== 0) {
     const key = swiper.isHorizontal() && rtl ? "marginLeft" : swiper.getDirectionLabel("marginRight");
-    slides2.filter((_, slideIndex) => {
+    slides.filter((_, slideIndex) => {
       if (!params.cssMode || params.loop) return true;
-      if (slideIndex === slides2.length - 1) {
+      if (slideIndex === slides.length - 1) {
         return false;
       }
       return true;
@@ -1040,7 +1040,7 @@ function updateSlides() {
     }
   }
   Object.assign(swiper, {
-    slides: slides2,
+    slides,
     snapGrid,
     slidesGrid,
     slidesSizesGrid
@@ -1119,10 +1119,10 @@ function updateAutoHeight(speed) {
 }
 function updateSlidesOffset() {
   const swiper = this;
-  const slides2 = swiper.slides;
+  const slides = swiper.slides;
   const minusOffset = swiper.isElement ? swiper.isHorizontal() ? swiper.wrapperEl.offsetLeft : swiper.wrapperEl.offsetTop : 0;
-  for (let i = 0; i < slides2.length; i += 1) {
-    slides2[i].swiperSlideOffset = (swiper.isHorizontal() ? slides2[i].offsetLeft : slides2[i].offsetTop) - minusOffset - swiper.cssOverflowAdjustment();
+  for (let i = 0; i < slides.length; i += 1) {
+    slides[i].swiperSlideOffset = (swiper.isHorizontal() ? slides[i].offsetLeft : slides[i].offsetTop) - minusOffset - swiper.cssOverflowAdjustment();
   }
 }
 const toggleSlideClasses$1 = (slideEl, condition, className) => {
@@ -1139,12 +1139,12 @@ function updateSlidesProgress(translate2) {
   const swiper = this;
   const params = swiper.params;
   const {
-    slides: slides2,
+    slides,
     rtlTranslate: rtl,
     snapGrid
   } = swiper;
-  if (slides2.length === 0) return;
-  if (typeof slides2[0].swiperSlideOffset === "undefined") swiper.updateSlidesOffset();
+  if (slides.length === 0) return;
+  if (typeof slides[0].swiperSlideOffset === "undefined") swiper.updateSlidesOffset();
   let offsetCenter = -translate2;
   if (rtl) offsetCenter = translate2;
   swiper.visibleSlidesIndexes = [];
@@ -1155,11 +1155,11 @@ function updateSlidesProgress(translate2) {
   } else if (typeof spaceBetween === "string") {
     spaceBetween = parseFloat(spaceBetween);
   }
-  for (let i = 0; i < slides2.length; i += 1) {
-    const slide2 = slides2[i];
+  for (let i = 0; i < slides.length; i += 1) {
+    const slide2 = slides[i];
     let slideOffset = slide2.swiperSlideOffset;
     if (params.cssMode && params.centeredSlides) {
-      slideOffset -= slides2[0].swiperSlideOffset;
+      slideOffset -= slides[0].swiperSlideOffset;
     }
     const slideProgress = (offsetCenter + (params.centeredSlides ? swiper.minTranslate() : 0) - slideOffset) / (slide2.swiperSlideSize + spaceBetween);
     const originalSlideProgress = (offsetCenter - snapGrid[0] + (params.centeredSlides ? swiper.minTranslate() : 0) - slideOffset) / (slide2.swiperSlideSize + spaceBetween);
@@ -1248,7 +1248,7 @@ const toggleSlideClasses = (slideEl, condition, className) => {
 function updateSlidesClasses() {
   const swiper = this;
   const {
-    slides: slides2,
+    slides,
     params,
     slidesEl,
     activeIndex
@@ -1272,26 +1272,26 @@ function updateSlidesClasses() {
     }
   } else {
     if (gridEnabled) {
-      activeSlide = slides2.find((slideEl) => slideEl.column === activeIndex);
-      nextSlide = slides2.find((slideEl) => slideEl.column === activeIndex + 1);
-      prevSlide = slides2.find((slideEl) => slideEl.column === activeIndex - 1);
+      activeSlide = slides.find((slideEl) => slideEl.column === activeIndex);
+      nextSlide = slides.find((slideEl) => slideEl.column === activeIndex + 1);
+      prevSlide = slides.find((slideEl) => slideEl.column === activeIndex - 1);
     } else {
-      activeSlide = slides2[activeIndex];
+      activeSlide = slides[activeIndex];
     }
   }
   if (activeSlide) {
     if (!gridEnabled) {
       nextSlide = elementNextAll(activeSlide, `.${params.slideClass}, swiper-slide`)[0];
       if (params.loop && !nextSlide) {
-        nextSlide = slides2[0];
+        nextSlide = slides[0];
       }
       prevSlide = elementPrevAll(activeSlide, `.${params.slideClass}, swiper-slide`)[0];
       if (params.loop && !prevSlide === 0) {
-        prevSlide = slides2[slides2.length - 1];
+        prevSlide = slides[slides.length - 1];
       }
     }
   }
-  slides2.forEach((slideEl) => {
+  slides.forEach((slideEl) => {
     toggleSlideClasses(slideEl, slideEl === activeSlide, params.slideActiveClass);
     toggleSlideClasses(slideEl, slideEl === nextSlide, params.slideNextClass);
     toggleSlideClasses(slideEl, slideEl === prevSlide, params.slidePrevClass);
@@ -2178,8 +2178,8 @@ function loopCreate(slideRealIndex, initial) {
   } = swiper;
   if (!params.loop || swiper.virtual && swiper.params.virtual.enabled) return;
   const initSlides = () => {
-    const slides2 = elementChildren(slidesEl, `.${params.slideClass}, swiper-slide`);
-    slides2.forEach((el, index) => {
+    const slides = elementChildren(slidesEl, `.${params.slideClass}, swiper-slide`);
+    slides.forEach((el, index) => {
       el.setAttribute("data-swiper-slide-index", index);
     });
   };
@@ -2237,7 +2237,7 @@ function loopFix(_temp) {
   if (!swiper.params.loop) return;
   swiper.emit("beforeLoopFix");
   const {
-    slides: slides2,
+    slides,
     allowSlidePrev,
     allowSlideNext,
     slidesEl,
@@ -2281,18 +2281,18 @@ function loopFix(_temp) {
   loopedSlides += params.loopAdditionalSlides;
   swiper.loopedSlides = loopedSlides;
   const gridEnabled = swiper.grid && params.grid && params.grid.rows > 1;
-  if (slides2.length < slidesPerView + loopedSlides || swiper.params.effect === "cards" && slides2.length < slidesPerView + loopedSlides * 2) {
+  if (slides.length < slidesPerView + loopedSlides || swiper.params.effect === "cards" && slides.length < slidesPerView + loopedSlides * 2) {
     showWarning("Swiper Loop Warning: The number of slides is not enough for loop mode, it will be disabled or not function properly. You need to add more slides (or make duplicates) or lower the values of slidesPerView and slidesPerGroup parameters");
   } else if (gridEnabled && params.grid.fill === "row") {
     showWarning("Swiper Loop Warning: Loop mode is not compatible with grid.fill = `row`");
   }
   const prependSlidesIndexes = [];
   const appendSlidesIndexes = [];
-  const cols = gridEnabled ? Math.ceil(slides2.length / params.grid.rows) : slides2.length;
+  const cols = gridEnabled ? Math.ceil(slides.length / params.grid.rows) : slides.length;
   const isInitialOverflow = initial && cols - initialSlide < slidesPerView && !centeredSlides;
   let activeIndex = isInitialOverflow ? initialSlide : swiper.activeIndex;
   if (typeof activeSlideIndex === "undefined") {
-    activeSlideIndex = swiper.getSlideIndex(slides2.find((el) => el.classList.contains(params.slideActiveClass)));
+    activeSlideIndex = swiper.getSlideIndex(slides.find((el) => el.classList.contains(params.slideActiveClass)));
   } else {
     activeIndex = activeSlideIndex;
   }
@@ -2300,7 +2300,7 @@ function loopFix(_temp) {
   const isPrev = direction === "prev" || !direction;
   let slidesPrepended = 0;
   let slidesAppended = 0;
-  const activeColIndex = gridEnabled ? slides2[activeSlideIndex].column : activeSlideIndex;
+  const activeColIndex = gridEnabled ? slides[activeSlideIndex].column : activeSlideIndex;
   const activeColIndexWithShift = activeColIndex + (centeredSlides && typeof setTranslate2 === "undefined" ? -slidesPerView / 2 + 0.5 : 0);
   if (activeColIndexWithShift < loopedSlides) {
     slidesPrepended = Math.max(loopedSlides - activeColIndexWithShift, slidesPerGroup);
@@ -2308,8 +2308,8 @@ function loopFix(_temp) {
       const index = i - Math.floor(i / cols) * cols;
       if (gridEnabled) {
         const colIndexToPrepend = cols - index - 1;
-        for (let i2 = slides2.length - 1; i2 >= 0; i2 -= 1) {
-          if (slides2[i2].column === colIndexToPrepend) prependSlidesIndexes.push(i2);
+        for (let i2 = slides.length - 1; i2 >= 0; i2 -= 1) {
+          if (slides[i2].column === colIndexToPrepend) prependSlidesIndexes.push(i2);
         }
       } else {
         prependSlidesIndexes.push(cols - index - 1);
@@ -2323,7 +2323,7 @@ function loopFix(_temp) {
     for (let i = 0; i < slidesAppended; i += 1) {
       const index = i - Math.floor(i / cols) * cols;
       if (gridEnabled) {
-        slides2.forEach((slide2, slideIndex) => {
+        slides.forEach((slide2, slideIndex) => {
           if (slide2.column === index) appendSlidesIndexes.push(slideIndex);
         });
       } else {
@@ -2335,7 +2335,7 @@ function loopFix(_temp) {
   requestAnimationFrame(() => {
     swiper.__preventObserver__ = false;
   });
-  if (swiper.params.effect === "cards" && slides2.length < slidesPerView + loopedSlides * 2) {
+  if (swiper.params.effect === "cards" && slides.length < slidesPerView + loopedSlides * 2) {
     if (appendSlidesIndexes.includes(activeSlideIndex)) {
       appendSlidesIndexes.splice(appendSlidesIndexes.indexOf(activeSlideIndex), 1);
     }
@@ -2345,16 +2345,16 @@ function loopFix(_temp) {
   }
   if (isPrev) {
     prependSlidesIndexes.forEach((index) => {
-      slides2[index].swiperLoopMoveDOM = true;
-      slidesEl.prepend(slides2[index]);
-      slides2[index].swiperLoopMoveDOM = false;
+      slides[index].swiperLoopMoveDOM = true;
+      slidesEl.prepend(slides[index]);
+      slides[index].swiperLoopMoveDOM = false;
     });
   }
   if (isNext) {
     appendSlidesIndexes.forEach((index) => {
-      slides2[index].swiperLoopMoveDOM = true;
-      slidesEl.append(slides2[index]);
-      slides2[index].swiperLoopMoveDOM = false;
+      slides[index].swiperLoopMoveDOM = true;
+      slidesEl.append(slides[index]);
+      slides[index].swiperLoopMoveDOM = false;
     });
   }
   swiper.recalcSlides();
@@ -3763,8 +3763,8 @@ class Swiper {
       slidesEl,
       params
     } = this;
-    const slides2 = elementChildren(slidesEl, `.${params.slideClass}, swiper-slide`);
-    const firstSlideIndex = elementIndex(slides2[0]);
+    const slides = elementChildren(slidesEl, `.${params.slideClass}, swiper-slide`);
+    const firstSlideIndex = elementIndex(slides[0]);
     return elementIndex(slideEl) - firstSlideIndex;
   }
   getSlideIndexByData(index) {
@@ -3845,7 +3845,7 @@ class Swiper {
     const swiper = this;
     const {
       params,
-      slides: slides2,
+      slides,
       slidesGrid,
       slidesSizesGrid,
       size: swiperSize,
@@ -3854,25 +3854,25 @@ class Swiper {
     let spv = 1;
     if (typeof params.slidesPerView === "number") return params.slidesPerView;
     if (params.centeredSlides) {
-      let slideSize = slides2[activeIndex] ? Math.ceil(slides2[activeIndex].swiperSlideSize) : 0;
+      let slideSize = slides[activeIndex] ? Math.ceil(slides[activeIndex].swiperSlideSize) : 0;
       let breakLoop;
-      for (let i = activeIndex + 1; i < slides2.length; i += 1) {
-        if (slides2[i] && !breakLoop) {
-          slideSize += Math.ceil(slides2[i].swiperSlideSize);
+      for (let i = activeIndex + 1; i < slides.length; i += 1) {
+        if (slides[i] && !breakLoop) {
+          slideSize += Math.ceil(slides[i].swiperSlideSize);
           spv += 1;
           if (slideSize > swiperSize) breakLoop = true;
         }
       }
       for (let i = activeIndex - 1; i >= 0; i -= 1) {
-        if (slides2[i] && !breakLoop) {
-          slideSize += slides2[i].swiperSlideSize;
+        if (slides[i] && !breakLoop) {
+          slideSize += slides[i].swiperSlideSize;
           spv += 1;
           if (slideSize > swiperSize) breakLoop = true;
         }
       }
     } else {
       if (view === "current") {
-        for (let i = activeIndex + 1; i < slides2.length; i += 1) {
+        for (let i = activeIndex + 1; i < slides.length; i += 1) {
           const slideInView = exact ? slidesGrid[i] + slidesSizesGrid[i] - slidesGrid[activeIndex] < swiperSize : slidesGrid[i] - slidesGrid[activeIndex] < swiperSize;
           if (slideInView) {
             spv += 1;
@@ -3923,8 +3923,8 @@ class Swiper {
       }
     } else {
       if ((params.slidesPerView === "auto" || params.slidesPerView > 1) && swiper.isEnd && !params.centeredSlides) {
-        const slides2 = swiper.virtual && params.virtual.enabled ? swiper.virtual.slides : swiper.slides;
-        translated = swiper.slideTo(slides2.length - 1, 0, false, true);
+        const slides = swiper.virtual && params.virtual.enabled ? swiper.virtual.slides : swiper.slides;
+        translated = swiper.slideTo(slides.length - 1, 0, false, true);
       } else {
         translated = swiper.slideTo(swiper.activeIndex, 0, false, true);
       }
@@ -4082,7 +4082,7 @@ class Swiper {
       params,
       el,
       wrapperEl,
-      slides: slides2
+      slides
     } = swiper;
     if (typeof swiper.params === "undefined" || swiper.destroyed) {
       return null;
@@ -4101,8 +4101,8 @@ class Swiper {
       if (wrapperEl) {
         wrapperEl.removeAttribute("style");
       }
-      if (slides2 && slides2.length) {
-        slides2.forEach((slideEl) => {
+      if (slides && slides.length) {
+        slides.forEach((slideEl) => {
           slideEl.classList.remove(params.slideVisibleClass, params.slideFullyVisibleClass, params.slideActiveClass, params.slideNextClass, params.slidePrevClass);
           slideEl.removeAttribute("style");
           slideEl.removeAttribute("data-swiper-slide-index");
@@ -4762,7 +4762,6 @@ function initSliders() {
       on: {
         init: function() {
           console.log("Слайдер повністю готовий!");
-          setEqualSlideHeight(slides);
         }
       }
     });
