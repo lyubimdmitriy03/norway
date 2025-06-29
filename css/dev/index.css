@@ -344,7 +344,7 @@ h3 {
 }
 .footer__input div[data-fls-form-error] {
   position: absolute;
-  bottom: -1.1875rem;
+  bottom: -1rem;
   inset-inline: 1.25rem auto;
   font-size: 0.75rem;
   color: rgb(250, 48, 48);
